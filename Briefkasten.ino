@@ -18,7 +18,7 @@ boolean package = false;
 const int MAX_DISTANCE = 200;
 //Variable um ID des RFID Chips speichern zu können
 long chipID;
-long grantedChipID;
+long grantedChipIDs[] = {/*alle erlaubten ChipIDs hier eintragen*/};
 //Variablen zur Verbindung mit Blynk
 char auth[] = "oO0of2TjCAU4Drwc10bgT3nD1DROd9D_";
 char ssid[] = "BN";
@@ -86,9 +86,18 @@ MFRC522 mfrc522(SS_PIN, RST_PIN);
 			 for (byte i = 0; i < mfrc522.uid.size; i++){
 				 chipID=((chipID+mfrc522.uid.uidByte[i])*10);
 			 }
+			 Serial.println(chipID);
 
-			 //ChipID wird mit der zugelassenen ChipID verglichen
-			 if (chipID == grantedChipID){
+			 //gelesene ChipID mit allen erlaubten ChipIDs vergleichen
+			 boolean grant = false;
+			 for(int i = 0; i < sizeof(grantedChipIDs); i++){
+				 long tempChipID = grantedChipIDs[i];
+				 if(chipID == tempChipID){
+					 grant = true;
+				 }
+			 }
+			 //Je nach Ergebnis des Vergleichs wird true oder false zurückgegeben
+			 if (grant){
 				 Serial.println("Zugang gewährt!");
 				 return true;
 			 } else {
