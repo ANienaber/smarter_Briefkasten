@@ -12,21 +12,26 @@
 #define RST_PIN 0 		//Pin D3
 
 
+
 //Hilfsvariable damit Pushnachricht nur einmal geschickt wird
 boolean package = false;
 //Standardwert vom Abstandssensor, wenn kein Paket im Briefkasten ist
 const int MAX_DISTANCE = 200;
-//Variable um ID des RFID Chips speichern zu können
+
+int taster;
+
+//Variable um ID des RFID Chips speichern zu kï¿½nnen
 long chipID;
-long grantedChipIDs[] = {/*alle erlaubten ChipIDs hier eintragen*/};
+long grantedChipIDs[] = {913060, 1346750};
+// MFRC522-Instanz erstellen
+MFRC522 mfrc522(SS_PIN, RST_PIN);
+
+
 //Variablen zur Verbindung mit Blynk
 char auth[] = "oO0of2TjCAU4Drwc10bgT3nD1DROd9D_";
 char ssid[] = "BN";
 char pass[] = "strenggeheim";
 
-
-// MFRC522-Instanz erstellen
-MFRC522 mfrc522(SS_PIN, RST_PIN);
 
 
 	void setup(){
@@ -36,13 +41,15 @@ MFRC522 mfrc522(SS_PIN, RST_PIN);
 		Blynk.begin(auth, ssid, pass, "iot.informatik.uni-oldenburg.de", 8080);
 
 		//LichtschrankenPin als Ouput definieren
-		pinMode(IRSensor, OUTPUT);
-
+		pinMode(A0, INPUT);
+    
+    // Taster Pin
+		pinMode(D2, INPUT); 
+		
 		// SPI-Bus und MFRC522initialisieren
 		SPI.begin();
 		mfrc522.PCD_Init();
 		delay(10);
-
 		// Details vom MFRC522 RFID READER / WRITER ausgeben
 		mfrc522.PCD_DumpVersionToSerial();
 	}
@@ -51,6 +58,7 @@ MFRC522 mfrc522(SS_PIN, RST_PIN);
 	void loop(){
 		Blynk.run();
 		packageDetected();
+    button();
 
 		if(RFIDDetected()){
 			openDoor();
@@ -75,13 +83,15 @@ MFRC522 mfrc522(SS_PIN, RST_PIN);
 
 
 	/* Nutzt RFID Sensor, um neu gelesenen Chip mit angegebener ChipID zu vergleichen.
-	 * Wenn der passende Chip gelesen wird, wird true zurückgegeben, sonst false.
+	 * Wenn der passende Chip gelesen wird, wird true zurï¿½ckgegeben, sonst false.
 	 */
 	boolean RFIDDetected(){
+    
 		if (mfrc522.PICC_IsNewCardPresent()){
 			 //ChipID wird resettet
 			 chipID = 0;
-
+       mfrc522.PICC_ReadCardSerial();
+       
 			 // Neue ChipID in Variable laden
 			 for (byte i = 0; i < mfrc522.uid.size; i++){
 				 chipID=((chipID+mfrc522.uid.uidByte[i])*10);
@@ -96,23 +106,33 @@ MFRC522 mfrc522(SS_PIN, RST_PIN);
 					 grant = true;
 				 }
 			 }
-			 //Je nach Ergebnis des Vergleichs wird true oder false zurückgegeben
+			 //Je nach Ergebnis des Vergleichs wird true oder false zurï¿½ckgegeben
 			 if (grant){
-				 Serial.println("Zugang gewährt!");
+				 Serial.println("Zugang gewï¿½hrt!");
 				 return true;
 			 } else {
-				 Serial.println("Chip hat keien Zugangsrechte!");
+				 Serial.println("Chip hat keine Zugangsrechte!");
 				 return false;
 			 }
-		}
+		} else Serial.println("keinen Chip erkannt");
 	}
 
-	//Öfnnet die Türen des Briefkasten
+	//ï¿½fnnet die Tï¿½ren des Briefkasten
 	void openDoor(){
 
 	}
 
-	//Schließt die Türen des Briefkastens
+	//Schlieï¿½t die Tï¿½ren des Briefkastens
 	void closeDoor(){
 
 	}
+
+
+  void button(){
+    taster = digitalRead(D2);
+    Serial.println(digitalRead(D2));
+    delay(250);
+    if(taster == HIGH){
+    closeDoor();
+    }
+}
