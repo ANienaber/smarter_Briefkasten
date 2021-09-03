@@ -4,7 +4,12 @@
 //RFID Sensor Libraries
 #include <SPI.h>
 #include <MFRC522.h>
-
+//Motor Library
+#include "WEMOS_Motor.h"
+//Motor shiled I2C Address: 0x30
+//PWM frequency: 1000Hz(1kHz)
+Motor M1(0x30,_MOTOR_A, 1000);//Motor A
+Motor M2(0x30,_MOTOR_B, 1000);//Motor B
 
 //Pins festelegen
 //RFID
@@ -17,8 +22,12 @@
 boolean package = false;
 //Standardwert vom Abstandssensor, wenn kein Paket im Briefkasten ist
 const int MAX_DISTANCE = 200;
-
+//Drehgeschwindigkeit der Motoren
+const int SPEED = 50;
+//Eingabe vom Taster
 int taster;
+//Hilfsvariable damit sich Türen nicht überdrehen
+boolean isOpen = false;
 
 //Variable um ID des RFID Chips speichern zu k�nnen
 long chipID;
@@ -119,12 +128,28 @@ char pass[] = "strenggeheim";
 
 	//�fnnet die T�ren des Briefkasten
 	void openDoor(){
-
+    if(isOpen){
+      return;
+    }
+    M1.setmotor( _CW, SPEED);
+    M2.setmotor(_CW, SPEED);
+    delay(1500);
+    M1.setmotor(_STOP);
+    M2.setmotor(_STOP);
+    isOpen = true;
 	}
 
 	//Schlie�t die T�ren des Briefkastens
 	void closeDoor(){
-
+     if(!isOpen){
+      return;
+     }
+     M1.setmotor( _CCW, SPEED);
+     M2.setmotor(_CCW, SPEED);
+     delay(1500);
+     M1.setmotor(_STOP);
+     M2.setmotor(_STOP);
+     isOpen = false;
 	}
 
 
