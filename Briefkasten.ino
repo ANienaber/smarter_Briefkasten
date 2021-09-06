@@ -126,21 +126,27 @@ char pass[] = "strenggeheim";
 		} else Serial.println("keinen Chip erkannt");
 	}
 
-	//�fnnet die T�ren des Briefkasten
+	//Oefnnet die Tueren des Briefkasten
 	void openDoor(){
+    //Abfrage damit Türen sich nicht überdrehen
     if(isOpen){
       return;
     }
+    //Motoren drehen sich im Uhrzeigersinn mit Geschwindikeit SPEED
     M1.setmotor( _CW, SPEED);
     M2.setmotor(_CW, SPEED);
+    //Motoren drehen sich für 1500 ms
     delay(1500);
+    //Motoren werden angehalten
     M1.setmotor(_STOP);
     M2.setmotor(_STOP);
+    //Wird gesetzt damit sich Tuer wieder schliessen kann
     isOpen = true;
 	}
 
-	//Schlie�t die T�ren des Briefkastens
+	//Schliesst die Tueren des Briefkastens
 	void closeDoor(){
+  //analog zu openDoor
      if(!isOpen){
       return;
      }
