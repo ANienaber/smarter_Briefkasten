@@ -4,8 +4,10 @@
 //RFID Sensor Libraries
 #include <SPI.h>
 #include <MFRC522.h>
+//Bibliothek zum speichern von Daten in der Flashdrive
+#include <ESP_EEPROM.h>
 //Motor Library
-#include "WEMOS_Motor.h"
+#include <WEMOS_Motor.h>
 //Motor shiled I2C Address: 0x30
 //PWM frequency: 1000Hz(1kHz)
 Motor M1(0x30,_MOTOR_A, 1000);//Motor A
@@ -41,9 +43,9 @@ char auth[] = "oO0of2TjCAU4Drwc10bgT3nD1DROd9D_";
 char ssid[] = "BN";
 char pass[] = "strenggeheim";
 
-
-
-	void setup(){
+	void setup(){ 
+	  //Build in LED zum Testend er Memory
+	  pinMode(LED_BUILTIN, OUTPUT);     // Initialize the LED_BUILTIN pin as an output
 		Serial.begin(115200);
 
 		//mit Blynk verbinden
@@ -61,6 +63,13 @@ char pass[] = "strenggeheim";
 		delay(10);
 		// Details vom MFRC522 RFID READER / WRITER ausgeben
 		mfrc522.PCD_DumpVersionToSerial();
+
+    //EEPROM mit minimaler Größe 16 beginnen 
+    EEPROM.begin(16);
+    //erstmaligen Wert in EEPROM speichern
+    EEPROM.put(0, isOpen);
+    boolean ok1 = EEPROM.commit();
+    Serial.println((ok1) ? "First commit OK" : "Commit failed");
 	}
 
 
@@ -117,7 +126,7 @@ char pass[] = "strenggeheim";
 			 }
 			 //Je nach Ergebnis des Vergleichs wird true oder false zur�ckgegeben
 			 if (grant){
-				 Serial.println("Zugang gew�hrt!");
+				 Serial.println("Zugang gewaehrt!");
 				 return true;
 			 } else {
 				 Serial.println("Chip hat keine Zugangsrechte!");
@@ -126,10 +135,21 @@ char pass[] = "strenggeheim";
 		} else Serial.println("keinen Chip erkannt");
 	}
 
-	//Oefnnet die Tueren des Briefkasten
+	//oefnnet die Tueren des Briefkasten
 	void openDoor(){
+    //Wert aus EEPROM holen
+    EEPROM.get(0, isOpen);
+    
     //Abfrage damit Türen sich nicht überdrehen
     if(isOpen){
+      Serial.println("Tür ist bereits geoeffnet!");
+      //Built in LED zum Testen der Memory blinken lassen
+      digitalWrite(LED_BUILTIN, LOW);   // Turn the LED on (Note that LOW is the voltage level
+      // but actually the LED is on; this is because
+      // it is active low on the ESP-01)
+      delay(1000);                      // Wait for a second
+      digitalWrite(LED_BUILTIN, HIGH);  // Turn the LED off by making the voltage HIGH
+      delay(2000);                      // Wait for two seconds (to demonstrate the active low LED)
       return;
     }
     //Motoren drehen sich im Uhrzeigersinn mit Geschwindikeit SPEED
@@ -140,14 +160,22 @@ char pass[] = "strenggeheim";
     //Motoren werden angehalten
     M1.setmotor(_STOP);
     M2.setmotor(_STOP);
-    //Wird gesetzt damit sich Tuer wieder schliessen kann
+    //Zustand der Tür zwischenspeichern
     isOpen = true;
+
+    //Zustand der Tür in EEPROM speichern
+    EEPROM.put(0, isOpen);
+    boolean ok2 = EEPROM.commit();
+    Serial.println((ok2) ? "Open commit OK" : "Open Commit failed");
 	}
 
 	//Schliesst die Tueren des Briefkastens
 	void closeDoor(){
-  //analog zu openDoor
+     //Wert aus EEPROM holen
+     EEPROM.get(0, isOpen);
+     //analog zu openDoor
      if(!isOpen){
+      Serial.println("Tür ist bereits geschlossen!");
       return;
      }
      M1.setmotor( _CCW, SPEED);
@@ -156,6 +184,11 @@ char pass[] = "strenggeheim";
      M1.setmotor(_STOP);
      M2.setmotor(_STOP);
      isOpen = false;
+     
+     //Zustand der Tür in EEPROM speichern
+     EEPROM.put(0, isOpen);
+     boolean ok3 = EEPROM.commit();
+     Serial.println((ok3) ? "Close commit OK" : "Close Commit failed");
 	}
 
 
