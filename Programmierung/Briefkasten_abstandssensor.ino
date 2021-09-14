@@ -3,9 +3,9 @@
 #include <BlynkSimpleEsp8266.h>
 #define BLYNK_PRINT Serial
 //Variablen zur Verbindung mit Blynk
-char auth[] = "";
-char ssid[] = "";
-char pass[] = "";
+char auth[] = "j_VuyJY24SRmAzo7RVOjfWb3cR2vgpGk";
+char ssid[] = "BN";
+char pass[] = "strenggeheim";
 
 //Standardwert vom Abstandssensor, wenn kein Paket im Briefkasten ist
 const int MAX_DISTANCE = 1000;
@@ -30,7 +30,7 @@ void loop() {
   Blynk.run();
   if(packageDetected()){
     delay(2000);
-    Blynk.notify("Paket");
+    Blynk.notify("Du hast ein Paket erhalten!");
     Serial.println("Paket");
   }
 }
@@ -47,9 +47,6 @@ void loop() {
     if(distance <= MAX_DISTANCE && package == false){
       package = true;
       return true;
-      /*Serial.println("Du hast ein Paket erhalten");
-      delay(500);
-      //Blynk.notify("Du hast ein Paket erhalten");*/
     }
     //Wenn Paket entnommen wurde, dann setze alles auf Anfang, um neues Paket erkennen zu können
     if(distance > MAX_DISTANCE){
