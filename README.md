@@ -1,4 +1,6 @@
-Der smarte Briefkasten, ermöglicht es Pakete von Personen zu empfangen, die einen Autorisierten RFID-Tag besitzen.
+Der smarte Briefkasten, ermöglicht es Pakete von Personen zu empfangen, wenn man nicht anwesend ist. 
+Wird von dem vorne liegenden RFID-Sensor ein autorisierter Tag erkannt, öffnen sich die Türen des Briefkasten. Legt man nun einen Gegenstand in den Briefkasten hinein, erkennt ein eingebauter Abstandssensor diesen und sendet durch die App Blynk eine Push Benachrichtung an das Handy des Nutzers. 
+Geschlossen werden die Türen durch einen Knopfdruck.
 
 Für den Zusammenbau werden MDF Holzbretterund Acrylglas, die mit einem Lasercutter geschnitten werden, ein 3D-Drucker. Hiermit werden die Modelle, die in dem Ordner Modellierung zu finden sind, gefertigt. Diese Modelle werden zusammengesteckt und geklebt
 Zu dieser Hardware gehören, zwei ESP8266 D1 Mini Mikrocontroller, ein Taster, eine Tripler Base, ein Motorshield, zwei DC-Motoren, ein RFID-Sensor, und ein Abstandssensor.
