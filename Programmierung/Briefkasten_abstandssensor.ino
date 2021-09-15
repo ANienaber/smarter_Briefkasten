@@ -1,4 +1,4 @@
-//Blynk Libraries
+/////Blynk Libraries
 #include <ESP8266WiFi.h>
 #include <BlynkSimpleEsp8266.h>
 #define BLYNK_PRINT Serial
@@ -23,6 +23,7 @@ void setup() {
 }
 
 void loop() {
+  //whilfe-Schleife zur Sicherstellung der Verbinfung und erneuter Verbindung bei Abbruch
   while(Blynk.connected() == false){
     Blynk.connect();
     Serial.print(".");

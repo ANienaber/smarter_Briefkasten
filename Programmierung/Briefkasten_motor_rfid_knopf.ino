@@ -31,9 +31,6 @@ MFRC522 mfrc522(SS_PIN, RST_PIN);
     //Build in LED zum Testend er Memory
     pinMode(LED_BUILTIN, OUTPUT);     // Initialize the LED_BUILTIN pin as an output
     
-    //LichtschrankenPin als Ouput definieren
-    pinMode(A0, INPUT);
-    
     // Taster Pin
     pinMode(D2, INPUT); 
     
@@ -96,16 +93,13 @@ MFRC522 mfrc522(SS_PIN, RST_PIN);
   }
 
   //oefnnet die Tueren des Briefkasten
-  void openDoor(){
-    //Serial.println("Anfang open");
-    //Wert aus EEPROM holen
-    //EEPROM.get(0, isOpen);
-    
+  void openDoor(){  
     //Abfrage damit Türen sich nicht überdrehen
     if(isOpen){
       //Serial.println("Tür ist bereits geoeffnet!");
       return;
     }
+    delay(200);
     //Motoren drehen sich im Uhrzeigersinn mit Geschwindikeit SPEED
     M1.setmotor( _CW, SPEED);
     M2.setmotor(_CCW, SPEED);
@@ -116,35 +110,21 @@ MFRC522 mfrc522(SS_PIN, RST_PIN);
     M2.setmotor(_STOP);
     //Zustand der Tür zwischenspeichern
     isOpen = true;
-    //Serial.println("Ende open");
-    //Zustand der Tür in EEPROM speichern
-    /*EEPROM.put(0, isOpen);
-    boolean ok2 = EEPROM.commit();
-    Serial.println((ok2) ? "Open commit OK" : "Open Commit failed");*/
   }
 
   //Schliesst die Tueren des Briefkastens
   void closeDoor(){
-    //Serial.println("Anfang close");
-     //Wert aus EEPROM holen
-     //EEPROM.get(0, isOpen);
-     //analog zu openDoor
      if(!isOpen){
       //Serial.println("Tür ist bereits geschlossen!");
       return;
      }
+     delay(200); 
      M1.setmotor( _CCW, SPEED);
      M2.setmotor(_CW, SPEED);
      delay(1500);
      M1.setmotor(_STOP);
      M2.setmotor(_STOP);
      isOpen = false;
-     //Serial.println("Ende close");
-     
-     //Zustand der Tür in EEPROM speichern
-     /*EEPROM.put(0, isOpen);
-     boolean ok3 = EEPROM.commit();
-     Serial.println((ok3) ? "Close commit OK" : "Close Commit failed");*/
   }
 
 
@@ -154,6 +134,5 @@ MFRC522 mfrc522(SS_PIN, RST_PIN);
     delay(250);
     if(taster == HIGH){
     closeDoor();
-    //Serial.println("Ende Button");
     }
 }
