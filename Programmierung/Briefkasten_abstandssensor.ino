@@ -4,8 +4,8 @@
 #define BLYNK_PRINT Serial
 //Variablen zur Verbindung mit Blynk
 char auth[] = "j_VuyJY24SRmAzo7RVOjfWb3cR2vgpGk";
-char ssid[] = "BN";
-char pass[] = "strenggeheim";
+char ssid[] = "";
+char pass[] = "";
 
 //Standardwert vom Abstandssensor, wenn kein Paket im Briefkasten ist
 const int MAX_DISTANCE = 1000;
